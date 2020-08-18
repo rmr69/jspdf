@@ -1,0 +1,252 @@
+function validateInput() {
+    console.log('validate input');
+}
+
+function checkBBSCode(table, column, data, parentColumn, parentColumnId, exceptId = null) {
+    let a = hasSameBBSCode(table, column, data, parentColumn, parentColumnId, exceptId);
+    let b = checkInt(data, 3);
+    return a == true && b == true;
+}
+
+function checkMinistryBBSCode(bbs_code, id) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "CommonServlet" + "?actionType=hasMinistryBBSCode&" + "bbs=" + bbs_code + "&id=" + id, false);
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText == 'true') {
+            showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦ªà§‚à¦°à§�à¦¬à§‡ à¦¬à§�à¦¯à¦¾à¦¬à¦¹à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¨à¦¤à§�à¦¨ à¦•à§‹à¦¡ à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return false;
+        } else {
+            //showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return true;
+        }
+    }
+}
+
+function checkPostCode(table, column, data, parentColumn, parentColumnId, exceptId = null) {
+    let a = hasSameBBSCode(table, column, data, parentColumn, parentColumnId, exceptId);
+    let b = checkInt(data, 4);
+    return a == true && b == true;
+}
+
+function checkOfficeCode(code, id) {
+    let a = hasSameOfficeCode(code, id);
+    let b = checkInt(code, 4);
+    return a == true && b == true;
+}
+
+function checkBatchNo(batch, id) {
+    let a = hasSameBatchNo(batch, id);
+    let b = checkLength(batch, 2);
+    return a == true && b == true;
+}
+
+function checkUnitCode(code, id) {
+    let a = hasUnitCode(code, id);
+    //let b = checkLength(code, 4);
+    return a == true;
+}
+
+function checkInt(val, size) {
+    if (val === undefined || val === null) {
+        showError("à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¸à¦¬ à¦¤à¦¥à§�à¦¯ à¦¦à¦¿à¦¨", "Please fill all input correctly");
+        return false;
+    }
+    if (!hasInteger(val)) {
+        showError("à¦¶à§�à¦§à§�à¦®à¦¾à¦¤à§�à¦° à¦¸à¦‚à¦–à§�à¦¯à¦¾ à¦¦à¦¿à¦¨", "Please provide number only");
+        return false;
+    }
+    const code = (size == 1 ? 'à§§' : (size == 2 ? 'à§¨' : (size == 3 ? 'à§©' : (size == 4 ? 'à§ª' : (size == 5 ? 'à§«' : (size == 6 ? 'à§¬' : (size == 7 ? 'à§­' : (size == 8 ? 'à§®' : (size == 9 ? 'à§¯' : 'à§§à§¦')))))))));
+    if (val.length > size) {
+        showError("à¦•à§‹à¦¡ à¦¸à¦‚à¦–à§�à¦¯à¦¾à¦° à¦¦à§€à¦°à§�à¦˜ " + code + " à¦�à¦° à¦¬à§‡à¦¶à¦¿ à¦¨à§Ÿ", "Code must be " + size + " digit integer");
+        return false;
+    }
+    return true;
+}
+
+function checkLength(val, size) {
+    if (val === undefined || val === null) {
+        showError("à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¸à¦¬ à¦¤à¦¥à§�à¦¯ à¦¦à¦¿à¦¨", "Please fill all input correctly");
+        return false;
+    }
+    const code = (size == 1 ? 'à§§' : (size == 2 ? 'à§¨' : (size == 3 ? 'à§©' : (size == 4 ? 'à§ª' : (size == 5 ? 'à§«' : (size == 6 ? 'à§¬' : (size == 7 ? 'à§­' : (size == 8 ? 'à§®' : (size == 9 ? 'à§¯' : 'à§§à§¦')))))))));
+    if (val.length > size) {
+        showError("à¦¬à§�à¦¯à¦¾à¦š à¦¨à¦®à§�à¦¬à¦°à§‡à¦° à¦¦à§€à¦°à§�à¦˜ " + code + " à¦�à¦° à¦¬à§‡à¦¶à¦¿ à¦¨à§Ÿ", "Code must be " + size + " digit integer");
+        return false;
+    }
+    return true;
+}
+
+function checkYear(string, min = 1, max = 255) {
+    if (string === undefined || string === null) {
+        showError("à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¸à¦¬ à¦¤à¦¥à§�à¦¯ à¦¦à¦¿à¦¨", "Please fill all input correctly");
+        return false;
+    }
+    if (hasSpecialCharacter(string)) {
+        showError("<>@!#$%^&*()_+[]{}?:;|'\"\\,/~`-= à¦�à¦‡ à¦…à¦•à§�à¦·à¦° à¦—à§�à¦²à§‹ à¦¸à¦ à¦¿à¦• à¦¨à§Ÿ", "<>@!#$%^&*()_+[]{}?:;|'\"\\,/~`-= This character are not valid");
+        return false;
+    }
+
+    if (!(string.length >= min && string.length <= max)) {
+        showError("à¦¸à¦°à§�à¦¬à¦¨à¦¿à¦®à§�à¦¨ à¦�à¦¬à¦‚ à¦¸à¦°à§�à¦¬à§‹à¦šà§�à¦š 8 à¦Ÿà¦¿ à¦…à¦•à§�à¦·à¦° à¦¦à¦¿à¦¨", "Please provide at least and at most 4 character");
+        return false;
+    }
+    return true;
+}
+
+function checkPassword(a, b) {
+    if (a === undefined || a === null) {
+        showError("à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦ªà¦¾à¦¸à¦“à§Ÿà¦¾à¦°à§�à¦¡ à¦¦à¦¿à¦¨", "Please provide your password");
+        return false;
+    }
+    if (a.length < 8) {
+        showError("à¦ªà¦¾à¦¸à¦“à§Ÿà¦¾à¦°à§�à¦¡à§‡à¦° à¦¸à¦‚à¦–à§�à¦¯à¦¾ à§® à¦¬à¦¾ à¦¤à¦¾à¦° à¦…à¦§à¦¿à¦•", "Password length must greater than 8");
+        return false;
+    }
+    if (a != b) {
+        showError("à¦ªà¦¾à¦¸à¦“à§Ÿà¦¾à¦°à§�à¦¡ à¦�à¦•à¦‡ à¦¨à§Ÿ", "Password doesn't match");
+        return false;
+    }
+    return true;
+}
+
+function checkString(string, min = 1, max = 255) {
+    if (string === undefined || string === null) {
+        showError("à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¸à¦¬ à¦¤à¦¥à§�à¦¯ à¦¦à¦¿à¦¨", "Please fill all input correctly");
+        return false;
+    }
+    if (hasSpecialCharacter(string)) {
+        showError("<>@!#$%^&*()_+[]{}?:;|'\"\\,/~`-= à¦�à¦‡ à¦…à¦•à§�à¦·à¦° à¦—à§�à¦²à§‹ à¦¸à¦ à¦¿à¦• à¦¨à§Ÿ", "<>@!#$%^&*()_+[]{}?:;|'\"\\,/~`-= This character are not valid");
+        return false;
+    }
+
+    if (!(string.length >= 1 && string.length <= 255)) {
+        showError("à¦¸à¦°à§�à¦¬à¦¨à¦¿à¦®à§�à¦¨ à§§ à¦�à¦¬à¦‚ à¦¸à¦°à§�à¦¬à§‹à¦šà§�à¦š à§¨à§«à§« à¦Ÿà¦¿ à¦…à¦•à§�à¦·à¦° à¦¦à¦¿à¦¨", "Please provide min 1 and maximum 255 character");
+        return false;
+    }
+    return true;
+}
+
+function hasSpecialCharacter(string) {
+    if (string === null || string === undefined) return false;
+    const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+    for (i = 0; i < specialChars.length; i++) {
+        if (string.indexOf(specialChars[i]) > -1) {
+            return true
+        }
+    }
+    return false;
+}
+
+function hasInteger(string) {
+    if (string === null || string === undefined) return false;
+    const specialChars = "0987654321";
+    for (i = 0; i < specialChars.length; i++) {
+        if (string.indexOf(specialChars[i]) > -1) {
+            return true
+        }
+    }
+    return false;
+}
+
+function hasSameBBSCode(table, column, data, parentColumn, parentColumnId, exceptId = null) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "CommonServlet" + "?actionType=getUniqueBBSCode&" +
+        "table=" + table + "&column=" + column + "&data=" + data + "&parent=" + parentColumn
+        + "&parent_id=" + parentColumnId + (exceptId !== null ? "&except_id=" + exceptId : ""), false);
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText == 'true') {
+            showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return false;
+        } else {
+            //showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return true;
+        }
+    }
+}
+
+function hasSameOfficeCode(code, id) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "CommonServlet" + "?actionType=hasOfficeCode&" + "code=" + code + "&id=" + id, false);
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText == 'true') {
+            showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦ªà§‚à¦°à§�à¦¬à§‡ à¦¬à§�à¦¯à¦¾à¦¬à¦¹à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¨à¦¤à§�à¦¨ à¦•à§‹à¦¡ à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return false;
+        } else {
+            //showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return true;
+        }
+    }
+}
+
+function hasSameBatchNo(batch, id) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "CommonServlet" + "?actionType=hasBatchNo&" + "batch=" + batch + "&id=" + id, false);
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText == 'true') {
+            showError("à¦¬à§�à¦¯à¦¾à¦š à¦¨à¦®à§�à¦¬à¦° à¦Ÿà¦¿ à¦ªà§‚à¦°à§�à¦¬à§‡ à¦¬à§�à¦¯à¦¾à¦¬à¦¹à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¨à¦¤à§�à¦¨ à¦¬à§�à¦¯à¦¾à¦š à¦¨à¦®à§�à¦¬à¦° à¦¦à¦¿à¦¨", "This batch no is already exist, please provide a new one");
+            return false;
+        } else {
+            //showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return true;
+        }
+    }
+}
+
+function hasUnitCode(code, id) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "CommonServlet" + "?actionType=hasUnitCode&" + "code=" + code + "&id=" + id, false);
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText == 'true') {
+            showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦ªà§‚à¦°à§�à¦¬à§‡ à¦¬à§�à¦¯à¦¾à¦¬à¦¹à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦¨à¦¤à§�à¦¨ à¦•à§‹à¦¡ à¦¦à¦¿à¦¨", "This code no already exist, please provide a new one");
+            return false;
+        } else {
+            //showError("à¦•à§‹à¦¡ à¦Ÿà¦¿ à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡, à¦…à¦¨à§�à¦—à§�à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦¦à¦¿à¦¨", "This BBS Code already exist, please provide a new one");
+            return true;
+        }
+    }
+}
+
+function searchDataFound() {
+    showToast("à¦¤à¦¥à§�à¦¯ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦—à§‡à¦›à§‡", "Data found");
+}
+
+function noSearchDataFound() {
+    showToast("à¦¤à¦¥à§�à¦¯ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿ à¦¨à¦¿", "No data found");
+}
+
+function insertToastMessage() {
+    const url_string = window.location.toString();
+    const url = new URL(url_string);
+    const c = url.searchParams.get("success");
+    if (c !== undefined && c !== null && c == 'true') {
+        showToast(success_message_bng, success_message_eng);
+        let go_to = url_string.split("&success")[0];
+        history.pushState({}, null, go_to);
+    }
+    console.log('location: ', url);
+}
+
+function tryParseInt(val) {
+    const b = isNumeric(val);
+    console.log(b);
+    return b;
+}
+
+function isNumeric(value) {
+    return /^-{0,1}\d+$/.test(value);
+}

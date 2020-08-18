@@ -1,0 +1,107 @@
+function onDivisionChangeSoDistrictChange(div_id, district_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(district_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + district_select_id + '-container').innerHTML = ("");
+    document.getElementById(district_select_id).innerHTML = getData("getGeo",
+        'geo_districts',
+        my_language === '1' ? 'district_name_bng' : 'district_name_eng',
+        'geo_division_id',
+        div_id,
+        my_language);
+}
+
+function onDistrictChangeSoUpazilaChange(district_id, upazila_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(upazila_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + upazila_select_id + '-container').innerHTML = ("");
+    document.getElementById(upazila_select_id).innerHTML = getData("getGeo",
+        'geo_upazilas',
+        my_language === '1' ? 'upazila_name_bng' : 'upazila_name_eng',
+        'geo_district_id',
+        district_id,
+        my_language);
+}
+
+function onDistrictChangeSoThanaChange(district_id, thana_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(thana_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + thana_select_id + '-container').innerHTML = ("");
+    document.getElementById(thana_select_id).innerHTML = getData("getGeo",
+        'geo_thanas',
+        my_language === '1' ? 'thana_name_bng' : 'thana_name_eng',
+        'geo_district_id',
+        district_id,
+        my_language);
+}
+
+function onDistrictChangeSoCityCorporationChange(district_id, city_corporation_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(city_corporation_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + city_corporation_select_id + '-container').innerHTML = ("");
+    document.getElementById(city_corporation_select_id).innerHTML = getData("getGeo",
+        'geo_city_corporations',
+        my_language === '1' ? 'city_corporation_name_bng' : 'city_corporation_name_eng',
+        'geo_district_id',
+        district_id,
+        my_language);
+}
+
+function onUpazilaChangeSoMunicipalityChange(upazila_id, municipality_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(municipality_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + municipality_select_id + '-container').innerHTML = ("");
+    document.getElementById(municipality_select_id).innerHTML = getData("getGeo",
+        'geo_municipalities',
+        my_language === '1' ? 'municipality_name_bng' : 'municipality_name_eng',
+        'geo_upazila_id',
+        upazila_id,
+        my_language);
+}
+
+function onUpazilaChangeSoUnionChange(upazila_id, union_select_id) {
+    const my_language = document.getElementById('my_language').value;
+    document.getElementById(union_select_id).innerHTML = ('');
+
+    // only applicable for select2
+    document.getElementById('select2-' + union_select_id + '-container').innerHTML = ("");
+    document.getElementById(union_select_id).innerHTML = getData("getGeo",
+        'geo_unions',
+        my_language === '1' ? 'union_name_bng' : 'union_name_eng',
+        'geo_upazila_id',
+        upazila_id,
+        my_language);
+}
+
+function getData(action, table, column, parent_column, parent_id, my_language) {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.open("GET", "CommonServlet" +
+        "?actionType=" + action +
+        "&table=" + table +
+        "&column=" + column +
+        "&parent=" + parent_column +
+        "&parent_id=" + parent_id +
+        "&language=" + my_language,
+        false);
+
+    xhttp.send();
+
+    if (xhttp.status === 200) {
+        console.log(xhttp.responseText);
+        if (xhttp.responseText) {
+            return xhttp.responseText;
+        } else {
+            return my_language === '1' ? 'à¦•à§‹à¦¨ à¦¤à¦¥à§�à¦¯ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿ à¦¨à¦¿' : 'No data found'
+        }
+    }
+}
